@@ -1,73 +1,47 @@
+"""Ref: https://blog.csdn.net/T_T233333333/article/details/120876783"""
 from queue import Queue
 from collections import deque
-import sys  # debug print
+import sys, os
+
+
 def d(msg):
-    print(">>>>>>> " + msg, file=sys.stderr)
-
-def init():
-    global programs, var, lock, qblock, qwait, QUANT
-    global t_asgn, t_print, t_lock, t_unlock, t_end
-    # load context
-    (pcount, t_asgn, t_print, t_lock, t_unlock, t_end, QUANT) = [
-        int(i) for i in input().split()
-    ]
-    # load programs
-    programs = list()
-    for i in range(pcount):
-        lines = []
-        while True:
-            line = input()
-            lines.append(line)
-            if line == "end":
-                break
-        programs.insert(i, lines)
-    # import pprint; pprint.pprint(programs)
-
-    # internal state
-    var = {chr(97 + i): 0 for i in range(26)}
-    lock = False
-    qblock = Queue()
-    qwait = deque()
-    qwait.extendleft(range(pcount))
-    # enqueue program id. [pcount-1, ..., 0]
+    if os.getenv('UVA_DEBUG'):
+        print(">>>>>>> " + msg, file=sys.stderr)  # stderr buffered
 
 
-def exec_cmd(p, pid) -> int:
-    global var
-    global lock
-    global qblock
-    global qwait
-    excute = p.pop(0)
-    cmd = excute.split()
-    d("{}: {}".format(pid, excute))
-    if len(cmd) > 1 and cmd[1] == "=":
-        var[cmd[0]] = int(cmd[2])
-        return t_asgn
-    elif cmd[0] == "print":
-        print("{}: {}".format(pid+1, var[cmd[1]]))
-        return t_print
-    elif cmd[0] == "lock":
-        if lock:
-            # must, to resume as lock instruction
-            p.insert(0, excute)
-            qblock.put(pid)
+def exec_cmd(c, p, pid) -> int:
+    cmd = p.pop(0)
+    d("{}: {}".format(pid, cmd))
+    if cmd[2] == "=":
+        ch, _, val = cmd.split()
+        c.var[ch] = int(val)
+        return c.cost[0]
+    elif cmd.startswith("print"):
+        _, val = cmd.split()
+        print("{}: {}".format(pid + 1, c.var[val]))
+        return c.cost[1]
+    elif cmd == "lock":
+        if c.lock:
+            p.insert(0, cmd)  # must, consume when unlock
+            c.qblock.put(pid)
             return -1
         else:
-            lock = True
-            return t_lock
-    elif cmd[0] == "unlock":
-        if not qblock.empty():
-            qwait.append(qblock.get())
-        lock = False
-        return t_unlock
-    else:  # end
-        return t_end
+            c.lock = True
+            return c.cost[2]
+    elif cmd == "unlock":
+        if not c.qblock.empty():
+            c.qwait.append(c.qblock.get())  # front of wait queue
+        c.lock = False
+        # d("block: {} wait: {}".format(list(c.qblock.queue), list(c.qwait)))
+        return c.cost[3]
+    else:
+        return c.cost[4]
 
 
-def exec_prog(prog, prog_id, quant):
-    time = quant
+def exec_prog(ctx, prog, prog_id):
+    time = ctx.quant
     while time > 0:
-        ret = exec_cmd(prog[prog_id], prog_id)
+        ret = exec_cmd(ctx, prog[prog_id], prog_id)
         if ret == -1:
             # lock
             return False
@@ -78,13 +52,47 @@ def exec_prog(prog, prog_id, quant):
     return True
 
 
+class Context:
+    def __init__(self, prog_num, t_asgn, t_print, t_lock, t_unlock, t_end, quant):
+        self.var = {chr(97 + i): 0 for i in range(26)}  # counters for alphabet
+        self.lock = False
+        self.qblock = Queue()
+        self.qwait = deque()
+        # enqueue program ids as [prog_num-1, ..., 0]
+        self.qwait.extendleft(range(prog_num))
+        self.prog_num = prog_num
+        self.cost = (
+            t_asgn,
+            t_print,
+            t_lock,
+            t_unlock,
+            t_end,
+        )
+        self.quant = quant
+
+def testcase():
+    # load context
+    init_vars = [int(i) for i in input().split()]
+    context = Context(*init_vars)
+    # load programs
+    programs = []
+    for i in range(context.prog_num):
+        lines = []
+        while True:  # test data may exceed 25 instructions
+            line = input()
+            lines.append(line)
+            if line == "end":
+                break
+        programs.insert(i, lines)
+    return (context, programs)
+
 T = int(input())
-for t in range(T):
-    input()
-    init()
-    while len(qwait) > 0:
-        id = qwait.pop()
-        if exec_prog(programs, id, QUANT):
-            qwait.appendleft(id)
-    if t != T - 1:
+for t in range(T, 0, -1):
+    input()  # blank per tc
+    context, programs = testcase()
+    while len(context.qwait) > 0:
+        program_id = context.qwait.pop()
+        if exec_prog(context, programs, program_id):
+            context.qwait.appendleft(program_id)
+    if t != 1:
         print()
