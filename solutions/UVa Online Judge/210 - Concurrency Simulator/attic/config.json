@@ -1,0 +1,17 @@
+{
+  "mainSolution": {
+    "value": "/home/dieter/.acmx/solutions/UVa Online Judge/210 - Concurrency Simulator/sol.py"
+  },
+  "bruteSolution": {},
+  "generator": {},
+  "checker": {},
+  "companionConfig": {
+    "value": {
+      "name": "210 - Concurrency Simulator",
+      "group": "UVa Online Judge",
+      "url": "https://onlinejudge.org/index.php?option=com_onlinejudge&Itemid=8&category=4&page=show_problem&problem=146",
+      "memoryLimit": 32,
+      "timeLimit": 3000
+    }
+  }
+}
