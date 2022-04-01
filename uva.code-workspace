@@ -1,0 +1,83 @@
+{
+	"folders": [
+		{
+			"path": "."
+		}
+	],
+	"settings": {
+		"python.defaultInterpreterPath": "python3"
+	},
+    "tasks": {
+		"version": "2.0.0",
+		"tasks": [
+			{
+				"type": "cppbuild",
+				"label": "C/C++: clang++ build active file",
+				"command": "/usr/bin/clang++",
+				"args": [
+					"-fcolor-diagnostics",
+					"-std=c++17",
+					"-DACMX",
+					"-g",
+					"${file}",
+					"-o",
+					"${fileDirname}/attic/${fileBasenameNoExtension}"
+				],
+				"options": {
+					"cwd": "${fileDirname}"
+				},
+				"problemMatcher": [
+					"$gcc"
+				],
+				"group": {
+					"kind": "build"
+				},
+				"detail": "compiler: /usr/bin/clang++"
+			},
+			{
+				"type": "shell",
+				"label": "Build active file",
+				"command": "/usr/bin/g++",
+				"args": [
+					"-std=c++17",
+					"-DACMX",
+					"--debug",
+					"${file}",
+					"-o",
+					"${fileDirname}/attic/${fileBasenameNoExtension}"
+				],
+				"problemMatcher": [],
+				"group": {
+					"kind": "build",
+					"isDefault": true
+				}
+			}
+		]
+	},
+	"launch": {
+		"version": "0.2.0",
+		"configurations": [
+			{
+				"name": "Launch with lldb",
+				"type": "lldb",
+				"request": "launch",
+				"program": "${fileDirname}/attic/${fileBasenameNoExtension}",
+				"args": ["${fileDirname}"],
+				"cwd": "${workspaceFolder}",
+				"stdio": ["${fileDirname}/testcases/0.in"],
+				"preLaunchTask": "Build active file",
+				"showDisplayString": true
+			},
+			{
+				"name": "Python: current file",
+				"type": "python",
+				"request": "launch",
+				"program": "${fileDirname}/${fileBasename}",
+				"args": ["<", "${fileDirname}/testcases/0.in"],
+				"cwd": "${workspaceFolder}",
+				"console": "integratedTerminal",
+				"showDisplayString": true
+			}
+		]
+	}
+}

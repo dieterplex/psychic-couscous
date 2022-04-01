@@ -1,0 +1,5 @@
+{
+    "preRun": [],
+    "run": ["python3", "$CODE", "DACMX"],
+    "ext": "py"
+}
