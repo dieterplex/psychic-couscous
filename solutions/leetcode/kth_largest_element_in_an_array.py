@@ -32,6 +32,7 @@
 # @leetup=code
 from typing import List
 import random
+import sys
 
 
 class Solution:
@@ -47,42 +48,61 @@ class Solution:
 
 def sol1(nums, k):
     "plain sorting"
-    # return sorted(nums)[-k]  # new list
-    nums.sort()  # inplace
+    nums.sort()  # sort inplace
     return nums[-k]
+    # return sorted(nums)[-k]  # new list
 
 
 def sol2(nums, k):
     "partitioning. faster then sol1"
 
-    def getSmallest(nums, l, r, i):
+    def getSmallest(nums, l, r, idx):
+        d(f'getSmallest l={l}, r={r}, indexInLR={idx-1}\tnums={nums}')
         if l >= r:
             return nums[l]
+        # q: partition point, new bound index
         q = partit(nums, l, r)
-        k = q - l + 1
-        if k == i:
+        # distance to left bound in range
+        distance = q - l + 1
+        if distance == idx:
+            d(f'ans={nums[q]}\tnums={nums}\n')
             return nums[q]
-        if i < k:
-            return getSmallest(nums, l, q - 1, i)
+        if idx < distance:
+            return getSmallest(nums, l, q - 1, idx)
         else:
-            return getSmallest(nums, q + 1, r, i - k)
+            return getSmallest(nums, q + 1, r, idx - distance)
 
     def partit(nums, l, r):
-        # optimize time complex O(n)~O(n^2), see halfrost/leetcode-go
-        k = l + random.randint(0, r - l)
-        print(f'k={k}', file=sys.stderr)
-        nums[k], nums[r] = nums[r], nums[k]
-        # nums[l..i] <= nums[r] < nums[i+1..j-1]
-        i = l - 1
+        # optimize time complex O(n) ~ O(n^2), from halfrost/leetcode-go
+        p = l + random.randint(0, r - l)
+        d(f'random par idx: "l={l}" <= "idx={p}" <= "r={r}"')
+        d(f'swap nums[idx={p}]={nums[p]} with nums[r={r}]={nums[r]}\t{nums}')
+        swap(nums, p, r)
+        # let nums[l..i] <= nums[r] < nums[i+1..j-1]
+        i = l - 1  # i: idx for next small num
         for j in range(l, r):
             if nums[j] <= nums[r]:
                 i += 1
-                nums[i], nums[j] = nums[j], nums[i]
-        nums[i+1], nums[r] = nums[r], nums[i+1]
+                if i != j:
+                    d(f'swap nums[i={i}]={nums[i]} with nums[j={j}]={nums[j]}\t{nums}')
+                    swap(nums, i, j)
+        d(f'swap nums[i+1={i+1}]={nums[i+1]} with nums[r={r}]={nums[r]}\t{nums}')
+        swap(nums, i+1, r)
         return i + 1
 
-    m = len(nums) - k + 1  # final index
+    def swap(nums, i, j):
+        if i != j:
+            nums[i], nums[j] = nums[j], nums[i]
+
+    m = len(nums) - k + 1  # final 1-based index
+    d(f"nums={nums}, k={k}, target index={m-1}")
     return getSmallest(nums, 0, len(nums) - 1, m)
+
+
+def d(msg: str):
+    "`export PYTHONUNBUFFERED=x` when debug"
+    if os.getenv('UVA_DEBUG'):
+        print(msg, file=sys.stderr)
 
 
 if __name__ == '__main__':
