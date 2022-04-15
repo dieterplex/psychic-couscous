@@ -53,7 +53,28 @@ from utils import *
 
 class Solution:
     def maxProfit(self, prices: List[int]) -> int:
-        
+        """
+        >>> Solution().maxProfit([7,1,5,3,6,4])
+        7
+        >>> Solution().maxProfit([1,2,3,4,5])
+        4
+        >>> Solution().maxProfit([7,6,4,3,1])
+        0
+        """
+        last = l = prices[0]
+        s = 0
+        need_r = True
+        for p in prices:
+            if p <= last:
+                s += last - l
+                l = p
+                need_r = False
+            else:
+                need_r = True
+            last = p
+        if need_r:
+            s += last - l
+        return s
 # @leetup=code
 
 # @leetup=inject:after_code
