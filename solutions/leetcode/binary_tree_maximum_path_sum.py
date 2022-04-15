@@ -44,8 +44,6 @@ from utils import *
 
 # @leetup=code
 class Solution:
-    maxsum = 0
-
     def maxPathSum(self, root: Optional[TreeNode]) -> int:
         """
         >>> Solution().maxPathSum(deserialize('[1,2,3]'))
@@ -56,8 +54,12 @@ class Solution:
         43
         >>> Solution().maxPathSum(deserialize('[-10,9,20,15,7,null,9]'))
         43
+        >>> Solution().maxPathSum(deserialize('[-3]'))
+        -3
+        >>> Solution().maxPathSum(deserialize('[-2,-1]'))
+        -1
         """
-        maxsum = 0
+        maxsum = -1000
         # subtreemax = {}
 
         def traverse(node: TreeNode) -> int:
