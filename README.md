@@ -2,7 +2,11 @@
 
 Using vscode with [acmX](https://github.com/mfornet/acmx)
 
-## Submit code with `cf-tool`
+## LeetCode in Python3
+
+Optionally install [pyenv](https://github.com/pyenv/pyenv#installation) with CPython 3.10.
+
+Run all doctest in current directory
 ```
-go install github.com/xalanq/cf-tool@latest
+pytest --doctest-modules
 ```

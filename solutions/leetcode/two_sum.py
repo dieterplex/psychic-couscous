@@ -41,6 +41,7 @@
 # 
 
 # @leetup=custom
+from utils import *
 # @leetup=code
 
 class Solution:

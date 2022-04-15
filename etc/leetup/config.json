@@ -13,7 +13,8 @@
             "before_function_definition": null
         },
         "python3": {
-            "before_code": "from utils import *",
+            "before_code": null,
+            "before_code_exclude": ["from utils import *"],
             "after_code": ["if __name__ == \"__main__\":", "    import doctest", "    doctest.testmod()"],
             "before_function_definition": null
         }

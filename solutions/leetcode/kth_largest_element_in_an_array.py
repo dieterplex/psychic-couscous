@@ -29,11 +29,9 @@
 """
 
 # @leetup=custom
+from utils import *
 # @leetup=code
-from typing import List
 import random
-import sys
-
 
 class Solution:
     def findKthLargest(self, nums: List[int], k: int) -> int:
@@ -97,16 +95,8 @@ def sol2(nums, k):
     m = len(nums) - k + 1  # final 1-based index
     d(f"nums={nums}, k={k}, target index={m-1}")
     return getSmallest(nums, 0, len(nums) - 1, m)
-
-
-def d(msg: str):
-    "`export PYTHONUNBUFFERED=x` when debug"
-    if os.getenv('UVA_DEBUG'):
-        print(msg, file=sys.stderr)
-
+# @leetup=code
 
 if __name__ == '__main__':
     import doctest
     doctest.testmod()
-
-# @leetup=code
