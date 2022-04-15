@@ -1,4 +1,5 @@
 import os, sys
+from typing import List
 
 def d(msg: str):
     if os.getenv('UVA_DEBUG'):
