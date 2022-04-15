@@ -1,3 +1,4 @@
+"""
 # @leetup=custom
 # @leetup=info id=124 lang=python3 slug=binary-tree-maximum-path-sum
 
@@ -18,7 +19,7 @@
 # []
 # Input: root = [1,2,3]
 # Output: 6
-# Explanation: The optimal path is 2 -> 1 -> 3 with a path sum of 2 + 1 + 3 = 
+# Explanation: The optimal path is 2 -> 1 -> 3 with a path sum of 2 + 1 + 3 =
 # 6.
 #
 # Example 2:
@@ -26,7 +27,7 @@
 # []
 # Input: root = [-10,9,20,null,null,15,7]
 # Output: 42
-# Explanation: The optimal path is 15 -> 20 -> 7 with a path sum of 15 + 20 + 
+# Explanation: The optimal path is 15 -> 20 -> 7 with a path sum of 15 + 20 +
 # 7 = 42.
 #
 #
@@ -35,30 +36,54 @@
 # * The number of nodes in the tree is in the range `[1, 3 * 104]`.
 # * `-1000 <= Node.val <= 1000`
 #
-
+"""
 # @leetup=custom
 # @leetup=inject:before_code_ex
 from utils import *
 # @leetup=inject:before_code_ex
 
 # @leetup=code
-
-# Definition for a binary tree node.
-# class TreeNode:
-#     def __init__(self, val=0, left=None, right=None):
-#         self.val = val
-#         self.left = left
-#         self.right = right
 class Solution:
-    """
-    >>> Solution().maxPathSum(deserialize('[1,2,3]'))
-    6
-    >>> Solution().maxPathSum(deserialize('[-10,9,20,null,null,15,7]'))
-    42
-    """
+    maxsum = 0
+
     def maxPathSum(self, root: Optional[TreeNode]) -> int:
-        pass
+        """
+        >>> Solution().maxPathSum(deserialize('[1,2,3]'))
+        6
+        >>> Solution().maxPathSum(deserialize('[-10,9,20,null,null,15,7]'))
+        42
+        >>> Solution().maxPathSum(deserialize('[-10,9,20,9,null,15,7]'))
+        43
+        >>> Solution().maxPathSum(deserialize('[-10,9,20,15,7,null,9]'))
+        43
+        """
+        maxsum = 0
+        # subtreemax = {}
+
+        def traverse(node: TreeNode) -> int:
+            if not node:
+                return 0
+            l = traverse(node.left)
+            r = traverse(node.right)
+            sum_ = node.val
+            if l > 0:
+                sum_ += l
+            if r > 0:
+                sum_ += r
+            # nonlocal subtreemax
+            # subtreemax[node] = sum_
+            nonlocal maxsum
+            maxsum = max(maxsum, sum_)
+            maxleaf = max(l, r)
+            if maxleaf > 0:
+                return maxleaf + node.val
+            else:
+                return node.val
+        traverse(root)
+        # d(subtreemax)
+        return maxsum
 # @leetup=code
+
 
 # @leetup=inject:after_code
 if __name__ == "__main__":

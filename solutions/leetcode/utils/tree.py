@@ -14,13 +14,16 @@ Author: Gongzq5/leetcode-helper
 """
 
 from collections import deque
+from dataclasses import dataclass
 import networkx as nx
 import matplotlib.pyplot as plt
 import math
 
 
+@dataclass
 class TreeNode:
     """Definition for a binary tree node."""
+
     def __init__(self, val=0, left=None, right=None):
         self.val = val
         self.left = left
@@ -35,14 +38,23 @@ class TreeNode:
         return self.val == other.val
         # return ((self.val, self.left, self.right) == (other.val, other.left, other.right))
 
+    def __lt__(self, other):
+        if not isinstance(other, TreeNode):
+            return NotImplemented
+        return self.val < other.val
+
+    def __hash__(self):
+        return hash((self.val, self.left, self.right))
+
 
 def fromArray(ls: list) -> TreeNode:
-    if len(ls) == 0: return None
+    if len(ls) == 0:
+        return None
     if isinstance(ls, str):
         ls = ls.strip("[]")
         ls = ls.split(',')
         ls = [None if v == "null" else int(v) for v in ls]
-    
+
     root = TreeNode(ls[0])
     queue = deque([root])
     i = 1
@@ -55,7 +67,7 @@ def fromArray(ls: list) -> TreeNode:
             node.right = TreeNode(ls[i+1])
             queue.append(node.right)
         i += 2
-        
+
     if i == len(ls)-1:
         node = queue.popleft()
         node.left = TreeNode(ls[i]) if ls[i] else None
@@ -93,9 +105,10 @@ def toStr(root: TreeNode) -> str:
         result.pop()
     return "[" + ",".join(result) + "]"
 
-   
+
 def repr_tree(node: TreeNode) -> str:
-    if node is None: return ""
+    if node is None:
+        return ""
     if node.left and node.right:
         leaf = f', {repr_tree(node.left)}, {repr_tree(node.right)}'
     elif node.left:
@@ -106,12 +119,13 @@ def repr_tree(node: TreeNode) -> str:
         leaf = ""
     return f'TreeNode({node.val}{leaf})'
 
+
 def deserialize(data: str) -> TreeNode:
     """from 297 serialize-and-deserialize-binary-tree"""
     if data == '[]':
         return None
     nodes = [None if val == 'null' else TreeNode(int(val))
-                for val in data.strip('[]{}').split(',')]
+             for val in data.strip('[]{}').split(',')]
     kids = nodes[::-1]
     root = kids.pop()
     for node in nodes:
@@ -122,37 +136,41 @@ def deserialize(data: str) -> TreeNode:
                 node.right = kids.pop()
     return root
 
+
 def draw(root: TreeNode) -> None:
     """Draw tree graph"""
     if root == None:
         return
     if isinstance(root, str):
         root = fromArray(root)
+
     def create_graph(G, node, pos={}, x=0, y=0, layer=1):
         G.add_node(id(node), desc=node.val)
         pos[id(node)] = (x, y)
-        
+
         mlayer = 0
         if node.left:
             G.add_edge(id(node), id(node.left))
             l_x, l_y = x - 1 / 2 ** layer, y - 1
             l_layer = layer + 1
-            _, _, mlayer = create_graph(G, node.left, x=l_x, y=l_y, pos=pos, layer=l_layer)
+            _, _, mlayer = create_graph(
+                G, node.left, x=l_x, y=l_y, pos=pos, layer=l_layer)
         if node.right:
             G.add_edge(id(node), id(node.right))
             r_x, r_y = x + 1 / 2 ** layer, y - 1
             r_layer = layer + 1
-            _, _, mlayer = create_graph(G, node.right, x=r_x, y=r_y, pos=pos, layer=r_layer)
-        
+            _, _, mlayer = create_graph(
+                G, node.right, x=r_x, y=r_y, pos=pos, layer=r_layer)
+
         mlayer = max(mlayer, layer)
         return (G, pos, mlayer)
-    
+
     graph = nx.DiGraph()
     graph, pos, height = create_graph(graph, root)
     # print('width={}, height={}'.format(height*math.log(height), height))
     fig, ax = plt.subplots(figsize=(height*math.log(height, 2)+1, height))
-    
+
     nx.draw(graph, pos, ax=ax, node_color='#d8f7fa', node_size=300)
     node_labels = nx.get_node_attributes(graph, 'desc')
     nx.draw_networkx_labels(graph, pos, labels=node_labels)
-    plt.show() 
+    plt.show()
