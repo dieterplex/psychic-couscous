@@ -68,11 +68,28 @@ from utils import *
 # @leetup=inject:before_code_ex
 
 # @leetup=code
-
 class Solution:
     def removeDuplicates(self, nums: List[int]) -> int:
-        
+        """
+        >>> nums = [1,1,2]
+        >>> Solution().removeDuplicates(nums)
+        2
+        >>> assert nums[0: 2] == [1,2]
+        >>> nums = [0,0,1,1,1,2,2,3,3,4]
+        >>> Solution().removeDuplicates(nums)
+        5
+        >>> assert nums[0: 5] == [0,1,2,3,4]
+        """
+        slot2rep = 1
+        for i, el in enumerate(nums):
+            if i > 0 and el > nums[i-1]:
+                # not dupe, replace and slot2rep++
+                nums[slot2rep] = el
+                slot2rep += 1
+            # d(f'{i}, {nums}')
+        return slot2rep
 # @leetup=code
+
 
 # @leetup=inject:after_code
 if __name__ == "__main__":
