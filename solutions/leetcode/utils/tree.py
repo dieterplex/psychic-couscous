@@ -15,8 +15,6 @@ Author: Gongzq5/leetcode-helper
 
 from collections import deque
 from dataclasses import dataclass
-import networkx as nx
-import matplotlib.pyplot as plt
 import math
 
 
@@ -137,12 +135,14 @@ def deserialize(data: str) -> TreeNode:
     return root
 
 
-def draw(root: TreeNode) -> None:
+def draw(root: TreeNode|str) -> None:
     """Draw tree graph"""
     if root == None:
         return
     if isinstance(root, str):
         root = fromArray(root)
+    import networkx as nx
+    import matplotlib.pyplot as plt
 
     def create_graph(G, node, pos={}, x=0, y=0, layer=1):
         G.add_node(id(node), desc=node.val)
