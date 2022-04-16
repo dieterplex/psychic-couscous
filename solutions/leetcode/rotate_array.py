@@ -1,3 +1,4 @@
+"""
 # @leetup=custom
 # @leetup=info id=189 lang=python3 slug=rotate-array
 
@@ -19,7 +20,7 @@
 #
 # Input: nums = [-1,-100,3,99], k = 2
 # Output: [3,99,-1,-100]
-# Explanation: 
+# Explanation:
 # rotate 1 steps to the right: [99,-1,-100,3]
 # rotate 2 steps to the right: [3,99,-1,-100]
 #
@@ -37,7 +38,7 @@
 #   different ways to solve this problem.
 # * Could you do it in-place with `O(1)` extra space?
 #
-
+"""
 # @leetup=custom
 # @leetup=inject:before_code_ex
 from utils import *
@@ -49,9 +50,68 @@ class Solution:
     def rotate(self, nums: List[int], k: int) -> None:
         """
         Do not return anything, modify nums in-place instead.
+
+        >>> input, k = [1,2,3,4,5,6,7], 10
+        >>> Solution().rotate(input, k); assert input == [5,6,7,1,2,3,4]
+        >>> input, k = [-1,-100,3,99], 2
+        >>> Solution().rotate(input, k); assert input == [3,99,-1,-100]
+        >>> input, k = [1,2], 5
+        >>> Solution().rotate(input, k); assert input == [2,1]
         """
-        
+        k %= len(nums)
+        if k:
+            nums[:] = nums[::-1]
+            nums[:] = nums[k-1::-1] + nums[:k-1:-1]
+            # nums[:k], nums[k:] = nums[-k:], nums[:-k]
 # @leetup=code
+
+def rev3(nums, k):
+    def numReverse(start, end):
+        while start < end:
+            nums[start], nums[end] = nums[end], nums[start]
+            start += 1
+            end -= 1
+    n = len(nums)
+    k %= n
+    if k:
+        numReverse(0, n - 1)
+        numReverse(0, k - 1)
+        numReverse(k, n - 1)
+
+def pysublist(nums, k):
+    k %= len(nums)
+    nums[:] = nums[-k:]+nums[:-k]
+
+def hardway(nums: List[int], k: int):
+    def gcd(a, b) -> int:
+        if b == 0:
+            return a
+        return gcd(b, a % b)
+
+    n = len(nums)
+    if n == 1:
+        return
+    if k > n:
+        k %= n
+    k = n - k
+    if k in (0, n):
+        return
+    shift_gcd = gcd(k, n)
+    for i in range(shift_gcd):
+        temp = nums[i]
+        j = i
+        while 1:
+            next_ = j + k
+            # d(f"nums: {nums}, i: {i}, j: {j}, next_: {next_}")
+            if next_ >= n:
+                next_ -= n
+            if next_ == i:
+                break
+            nums[j] = nums[next_]
+            j = next_
+        nums[j] = temp
+        # d(f"nums: {nums}, i: {i}, j: {j}, next_: {next_}")
+    # d(f"nums: {nums}")
 
 # @leetup=inject:after_code
 if __name__ == "__main__":
