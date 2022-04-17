@@ -1,6 +1,7 @@
 import os
 import sys
 from typing import List, Optional
+import numpy
 
 from .tree import TreeNode, deserialize, draw
 from .list import ListNode
@@ -10,7 +11,9 @@ __all__ = ['List', 'Optional'] + ['d', 'check'] + ['ListNode', 'TreeNode', 'dese
 
 def d(msg: str):
     if os.getenv('UVA_DEBUG'):
-        print(msg, file=sys.stderr)
+        if isinstance(msg, List):
+            msg = numpy.array(msg)
+        print(msg, file=sys.stderr, flush=True)
 
 
 def check(anything):
